@@ -47,10 +47,9 @@ void loop() {
       }
 
       case GO_ON: {
-        int value = eye.value;
+        int &value = eye.value;
         if (value > 0) {
           value = value - PWM_STEP;
-          eye.value = value;
           driver.getPin(i).setValueAndWrite(value);
         
         } else {
@@ -72,10 +71,9 @@ void loop() {
       }
         
       case GO_OFF: {
-        int value = eye.value;
+        int &value = eye.value;
         if (value < PCA9685_MAX_VALUE) {
           value = value + PWM_STEP;
-          eye.value = value;
           driver.getPin(i).setValueAndWrite(value);
         
         } else {
