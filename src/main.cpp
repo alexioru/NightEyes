@@ -5,8 +5,12 @@
 // Config
 #define EYES_COUNT 1
 #define PWM_STEP 8
+
 #define MIN_ON_TIME 5   // In seconds
 #define MAX_ON_TIME 15  // In seconds
+
+#define MIN_OFF_TIME 1   // In seconds
+#define MAX_OFF_TIME 5  // In seconds
 
 PCA9685 driver = PCA9685(0x0, PCA9685_MODE_LED_DIRECT, 800.0);
 
@@ -81,7 +85,7 @@ void loop() {
         
         } else {
           eye.state = OFF;
-          eye.offEndTime = millis() + 2000; 
+          eye.offEndTime = millis() + 1000 * random(MIN_OFF_TIME, MAX_OFF_TIME);
           Serial.print(i);
           Serial.println(" OFF");
         }
