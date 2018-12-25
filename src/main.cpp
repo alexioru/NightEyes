@@ -3,19 +3,20 @@
 #include <Wire.h>
 
 // Config
-#define EYES_COUNT 16
-#define PWM_STEP 8
-#define OFF_2_SLEEP_RATIO 1 // Means OFF.count / SLEEP.cout = X
+#define EYES_COUNT 8 // 0...16
+#define PWM_STEP 8 // 1 2 4 8
+#define ON_2_OFF_RATIO 1 // For initial setup
+#define OFF_2_SLEEP_RATIO 10 // Means OFF.count / SLEEP.cout = X
 
 // Times random MIN...MAX in seconds
-#define MIN_ON_TIME 1
-#define MAX_ON_TIME 2
+#define MIN_ON_TIME 5
+#define MAX_ON_TIME 15
 
-#define MIN_OFF_TIME 1
-#define MAX_OFF_TIME 2
+#define MIN_OFF_TIME 2
+#define MAX_OFF_TIME 6
 
-#define MIN_SLEEP_TIME 1
-#define MAX_SLEEP_TIME 2
+#define MIN_SLEEP_TIME 20
+#define MAX_SLEEP_TIME 30
 
 PCA9685 driver = PCA9685(0x0, PCA9685_MODE_LED_DIRECT, 800.0);
 
@@ -24,9 +25,8 @@ enum State {OFF, GO_ON, ON, GO_OFF};
 struct Eye {
   State state = OFF;
   int value = 0;
-    
-  unsigned long offEndTime = millis() + 2000;
-  unsigned long onEndTime = 0;  
+  unsigned long onEndTime = 0;
+  unsigned long offEndTime = 0;
 };
 
 Eye eyes[EYES_COUNT];
@@ -37,9 +37,27 @@ void setup() {
   driver.setup();
   randomSeed(analogRead(0)); // For random values
 
-  // All off
-  for(int i = 0; i < 16; i++) {
-    driver.getPin(i).fullOnAndWrite(); // Inversed
+  // Initial state
+  for(int i = 0; i < EYES_COUNT; i++) {
+    Eye &eye = eyes[i];
+    if (random(ON_2_OFF_RATIO + 1)) {
+      eye.state = ON;
+      eye.value = 0;
+      eye.onEndTime = millis() + 1000 * random(MIN_ON_TIME, MAX_ON_TIME);
+      driver.getPin(i).fullOffAndWrite(); // On
+
+    } else {
+      eye.state = OFF;
+      eye.value = PCA9685_MAX_VALUE;
+      eye.onEndTime = millis() + 1000 * random(MIN_ON_TIME, MAX_ON_TIME);
+      driver.getPin(i).fullOnAndWrite(); // Off
+    }
+
+  }
+
+  // All others pins
+  for(int i = EYES_COUNT; i < 16; i++) {
+    driver.getPin(i).fullOnAndWrite(); // Off
   }
 
 }
