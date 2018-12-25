@@ -4,7 +4,7 @@
 
 // Config
 #define EYES_COUNT 8 // 0...16
-#define PWM_STEP 1
+#define PWM_STEP 5 // One of 4095
 #define ON_2_OFF_RATIO 1 // For initial setup
 #define OFF_2_SLEEP_RATIO 10 // Means OFF.count / SLEEP.cout = X
 
@@ -13,7 +13,7 @@
 #define MAX_ON_TIME 15
 
 #define MIN_OFF_TIME 2
-#define MAX_OFF_TIME 6
+#define MAX_OFF_TIME 8
 
 #define MIN_SLEEP_TIME 20
 #define MAX_SLEEP_TIME 30
