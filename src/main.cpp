@@ -33,13 +33,13 @@ void setup() {
 }
 
 void loop() {
-  unsigned long currentTime = millis();
-
+  unsigned long currentTime = millis(); 
   for(int i = 0; i < EYES_COUNT; i++) {
-    switch (eyes[i].state) {
+    Eye &eye = eyes[i];
+    switch (eye.state) {
       case OFF: {
-        if (currentTime >= eyes[i].offEndTime) {
-          eyes[i].state = GO_ON;
+        if (currentTime >= eye.offEndTime) {
+          eye.state = GO_ON;
           Serial.print(i);
           Serial.println(" GO_ON");
         }
@@ -47,15 +47,15 @@ void loop() {
       }
 
       case GO_ON: {
-        int value = eyes[i].value;
+        int value = eye.value;
         if (value > 0) {
           value = value - PWM_STEP;
-          eyes[i].value = value;
+          eye.value = value;
           driver.getPin(i).setValueAndWrite(value);
         
         } else {
-          eyes[i].state = ON;
-          eyes[i].onEndTime = millis() + 10000;
+          eye.state = ON;
+          eye.onEndTime = millis() + 10000;
           Serial.print(i);
           Serial.println(" ON");
         }
@@ -63,8 +63,8 @@ void loop() {
       }
         
       case ON: {
-        if (currentTime >= eyes[i].onEndTime) {
-          eyes[i].state = GO_OFF;
+        if (currentTime >= eye.onEndTime) {
+          eye.state = GO_OFF;
           Serial.print(i);
           Serial.println(" GO_OFF");
         }
@@ -72,15 +72,15 @@ void loop() {
       }
         
       case GO_OFF: {
-        int value = eyes[i].value;
+        int value = eye.value;
         if (value < PCA9685_MAX_VALUE) {
           value = value + PWM_STEP;
-          eyes[i].value = value;
+          eye.value = value;
           driver.getPin(i).setValueAndWrite(value);
         
         } else {
-          eyes[i].state = OFF;
-          eyes[i].offEndTime = millis() + 2000; 
+          eye.state = OFF;
+          eye.offEndTime = millis() + 2000; 
           Serial.print(i);
           Serial.println(" OFF");
         }
