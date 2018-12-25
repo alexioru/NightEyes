@@ -5,12 +5,17 @@
 // Config
 #define EYES_COUNT 1
 #define PWM_STEP 8
+#define OFF_2_SLEEP_RATIO 5 // Means OFF.count / SLEEP.cout = X
 
-#define MIN_ON_TIME 5   // In seconds
-#define MAX_ON_TIME 15  // In seconds
+// Times random MIN...MAX in seconds
+#define MIN_ON_TIME 5
+#define MAX_ON_TIME 15
 
-#define MIN_OFF_TIME 1   // In seconds
-#define MAX_OFF_TIME 5  // In seconds
+#define MIN_OFF_TIME 1
+#define MAX_OFF_TIME 5
+
+#define MIN_SLEEP_TIME 10
+#define MAX_SLEEP_TIME 20
 
 PCA9685 driver = PCA9685(0x0, PCA9685_MODE_LED_DIRECT, 800.0);
 
@@ -85,9 +90,18 @@ void loop() {
         
         } else {
           eye.state = OFF;
-          eye.offEndTime = millis() + 1000 * random(MIN_OFF_TIME, MAX_OFF_TIME);
-          Serial.print(i);
-          Serial.println(" OFF");
+
+          if (random(OFF_2_SLEEP_RATIO) == 0) {
+            Serial.print(i);
+            Serial.println(" Sleep");
+            eye.offEndTime = millis() + 1000 * random(MIN_SLEEP_TIME, MAX_SLEEP_TIME);
+
+          } else {
+            Serial.print(i);
+            Serial.println(" OFF");
+            eye.offEndTime = millis() + 1000 * random(MIN_OFF_TIME, MAX_OFF_TIME);
+          }
+
         }
         break;
       }
