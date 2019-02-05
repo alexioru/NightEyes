@@ -18,7 +18,7 @@
 #define MIN_SLEEP_TIME 20
 #define MAX_SLEEP_TIME 30
 
-PCA9685 driver = PCA9685(0x0, PCA9685_MODE_LED_DIRECT, 800.0);
+PCA9685 driver = PCA9685(0x0, PCA9685_MODE_LED_DIRECT, 1500.0);
 
 enum State {OFF, GO_ON, ON, GO_OFF};
 
@@ -32,7 +32,6 @@ struct Eye {
 Eye eyes[EYES_COUNT];
 
 void setup() {
-  Serial.begin(9600);
   Wire.begin();
   driver.setup();
   randomSeed(analogRead(0)); // For random values
@@ -70,8 +69,6 @@ void loop() {
       case OFF: {
         if (currentTime >= eye.offEndTime) {
           eye.state = GO_ON;
-          Serial.print(i);
-          Serial.println(" GO_ON");
         }
         break;
       }
@@ -85,8 +82,6 @@ void loop() {
         } else {
           eye.state = ON;
           eye.onEndTime = millis() + 1000 * random(MIN_ON_TIME, MAX_ON_TIME);
-          Serial.print(i);
-          Serial.println(" ON");
         }
         break;
       }
@@ -94,8 +89,6 @@ void loop() {
       case ON: {
         if (currentTime >= eye.onEndTime) {
           eye.state = GO_OFF;
-          Serial.print(i);
-          Serial.println(" GO_OFF");
         }
         break;
       }
@@ -110,13 +103,9 @@ void loop() {
           eye.state = OFF;
 
           if (random(OFF_2_SLEEP_RATIO + 1)) {
-            Serial.print(i);
-            Serial.println(" OFF");
             eye.offEndTime = millis() + 1000 * random(MIN_OFF_TIME, MAX_OFF_TIME);
             
           } else {
-            Serial.print(i);
-            Serial.println(" Sleep");
             eye.offEndTime = millis() + 1000 * random(MIN_SLEEP_TIME, MAX_SLEEP_TIME);
 
           }
